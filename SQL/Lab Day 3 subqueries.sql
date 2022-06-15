@@ -48,12 +48,13 @@ SELECT title FROM film where film_id in
 SELECT title from FILM WHERE film_id in  #inventory
 (SELECT film_id FROM inventory WHERE inventory_id in  #was rented
 (SELECT inventory_id FROM rental WHERE customer_id=  #fits the right customer
-(SELECT customer_id from (SELECT customer_id, sum(amount) as total_paid FROM payment GROUP BY customer_id ORDER BY total_paid desc LIMIT 1) temp)));
+(SELECT customer_id from 
+(SELECT customer_id, sum(amount) as total_paid FROM payment GROUP BY customer_id ORDER BY total_paid desc LIMIT 1) temp)));
 
 
 #8 Customers who spent more than the average payments.
-WITH avg_payment as (SELECT sum(amount) as group_total_paid FROM payment GROUP BY customer_id)
+WITH customer_totals as (SELECT sum(amount) as amount_paid FROM payment GROUP BY customer_id)
 SELECT first_name, last_name FROM customer WHERE customer_id in
-(Select customer_id FROM
-(SELECT customer_id, sum(amount) as total_payment FROM payment GROUP BY customer_id HAVING total_payment>
-(SELECT avg(group_total_paid) from avg_payment))temp) ORDER BY first_name;
+(SELECT customer_id FROM
+(SELECT customer_id, sum(amount) as total_payment FROM payment GROUP BY customer_id HAVING total_payment >
+(SELECT avg(amount_paid) from customer_totals))temp) ORDER BY first_name;

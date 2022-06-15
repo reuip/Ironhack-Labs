@@ -4,7 +4,7 @@ SELECT a.first_name, a.last_name, count(b.film_id) as num_appearances
 FROM actor a 
 JOIN film_actor b 
 USING (actor_id)
-GROUP BY b.actor_id
+GROUP BY a.actor_id, a.first_name, a.last_name
 ORDER BY num_appearances desc
 LIMIT 1;
 
@@ -13,7 +13,7 @@ SELECT a.first_name, a.last_name, count(b.rental_id) as num_rentals
 FROM customer a 
 JOIN rental b 
 USING (customer_id)
-GROUP BY b.customer_id
+GROUP BY a.customer_id, a.last_name, a.first_name
 ORDER BY num_rentals desc
 LIMIT 1;
 
@@ -37,6 +37,7 @@ FROM staff a
 JOIN payment b 
 USING (staff_id)
 WHERE b.payment_date between "2005-08-01" and "2005-08-31"
+#WHERE year(payment_date)=2005 and month(payment_date)=08
 GROUP BY staff_id;
 
 #6. List each film and the number of actors who are listed for that film.
@@ -44,7 +45,7 @@ SELECT a.title, count(b.actor_id) as num_actors
 FROM film a
 LEFT JOIN film_actor b
 USING (film_id)
-GROUP BY b.film_id
+GROUP BY a.film_id, a.title
 ORDER BY num_actors desc;
 
 /*7. Using the tables payment and customer and the JOIN command, list the total paid by each customer. 

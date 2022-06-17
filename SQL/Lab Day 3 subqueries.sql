@@ -22,6 +22,12 @@ SELECT title FROM film WHERE film_id in
 (SELECT film_id FROM film_category WHERE category_id in
 (SELECT category_id FROM category WHERE name="Family"));
 
+#Cleaner way to do it
+SELECT title FROM film WHERE film_id in
+(SELECT film_id FROM film_category
+JOIN category USING (category_id)
+WHERE name="Family");
+
 /*5 Get name and email from customers from Canada using subqueries. 
 Do the same with joins. Note that to create a join, 
 you will have to identify the correct tables with their primary keys and foreign keys, 
@@ -42,6 +48,14 @@ SELECT title FROM film where film_id in
 (SELECT actor_id from 
 (SELECT actor_id,count(film_id) as num_films from film_actor GROUP BY actor_id ORDER BY num_films desc limit 1) temp));
 
+#Cleaner way to do it from Rafa using WITH
+WITH most_profilic_actor AS (select actor_id from film_actor
+		group by actor_id order by count(film_id)desc limit 1)
+
+SELECT title from film inner join film_actor using (film_id)
+where actor_id = (select actor_id from most_profilic_actor);
+
+
 #7 Films rented by most profitable customer. You can use the customer table and payment table to find the most profitable customer 
 #ie the customer that has made the largest sum of payments
 
@@ -58,3 +72,9 @@ SELECT first_name, last_name FROM customer WHERE customer_id in
 (SELECT customer_id FROM
 (SELECT customer_id, sum(amount) as total_payment FROM payment GROUP BY customer_id HAVING total_payment >
 (SELECT avg(amount_paid) from customer_totals))temp) ORDER BY first_name;
+
+#Cleaner way to do it
+WITH customer_totals as (SELECT sum(amount) as amount_paid FROM payment GROUP BY customer_id)
+SELECT first_name,last_name from customer 
+JOIN payment USING (customer_id) GROUP BY customer_id 
+HAVING sum(amount)>(SELECT avg(amount_paid) FROM customer_totals);

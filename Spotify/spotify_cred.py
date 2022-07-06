@@ -1,2 +1,0 @@
-c_id = 'b4a9b8cb681f463caa0847a413724e3e'
-c_se = 'a88d6e090de64de49735a790cb04a164'
